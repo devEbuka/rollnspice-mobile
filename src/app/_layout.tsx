@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 
 import AppTabs from '@/components/app-tabs';
 import { Brand } from '@/constants/brand';
+import { AuthProvider } from '@/components/auth-provider';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 const theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: Brand.cream, card: Brand.panel, text: Brand.charcoal, primary: Brand.orange } };
@@ -22,7 +23,7 @@ export default function TabLayout() {
   return (
     <ThemeProvider value={theme}>
       <StatusBar style="dark" />
-      <AppTabs />
+      <AuthProvider><AppTabs /></AuthProvider>
     </ThemeProvider>
   );
 }

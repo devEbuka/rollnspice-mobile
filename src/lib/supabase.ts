@@ -1,4 +1,7 @@
 import 'react-native-url-polyfill/auto';
+import './auth-crypto';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 let client: SupabaseClient | undefined;
@@ -8,9 +11,13 @@ export function getSupabase() {
   const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
   const key = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) throw new Error('Menu connection is not configured.');
-  // Public menu only. Persistent authentication is a separate approved task.
   client = createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    auth: {
+      ...(Platform.OS !== 'web' ? { storage: AsyncStorage } : {}),
+      persistSession: true, autoRefreshToken: true, detectSessionInUrl: false,
+      flowType: 'pkce',
+      experimental: { appendPkceFlowIdToRedirects: true },
+    },
   });
   return client;
 }

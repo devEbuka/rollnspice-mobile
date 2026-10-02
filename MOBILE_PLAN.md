@@ -1,6 +1,6 @@
 # Mobile integration plan
 
-Status: staged implementation, 2026-10-02. The baseline, dependency review, and live read-only menu task have been approved. Shared-cart/auth/checkout proposals below remain subject to their own approval. No website or database changes applied.
+Status: staged implementation, 2026-10-02. The baseline, dependency review, live menu, branding, and Google authentication implementation have been approved. Authentication code is implemented; development-build setup and device verification remain pending. Shared-cart/checkout proposals below remain subject to their own approval. No website or database changes applied.
 
 ## Verified starting point
 
@@ -73,7 +73,7 @@ Scope approved: review SDK-compatible dependency remediation. Registry checks fo
 
 - Added exact-pinned @supabase/supabase-js 2.117.2 and react-native-url-polyfill 4.0.0 through Expo install. No additional native modules required.
 - Added EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY to ignored .env.local by copying only the allowlisted public values from the website. Empty .env.example records their names. API URL is not needed for this step.
-- src/lib/supabase.ts owns the singleton client. Auth persistence, URL detection, and refresh are disabled for the public read-only phase; persistent session storage/lifecycle handling belongs to the sign-in task.
+- src/lib/supabase.ts owns the singleton client. The approved sign-in task now enables native AsyncStorage persistence and foreground token refresh. Automatic URL detection stays disabled; validated PKCE callbacks are exchanged explicitly. README.md records development-build and redirect prerequisites.
 - src/lib/products.ts uses the exact website select and ordering, with prices divided by 100 for naira display. src/hooks/use-products.ts handles request timeout, cleanup/cancellation, and retry. FlatList/product cards replace only the Home starter screen; full brand styling and other tabs remain future work.
 - Public-key live query verified all six products/prices without a signed-in session. No private data or privileged credentials used and no data writes performed. User confirmed the live menu displays and works on their Android phone on 2026-10-02; the live-menu task is complete. Website brand styling is next. Device disconnect/retry testing remains part of end-to-end verification.
 - Final validation: npm run lint and npm run typecheck pass; Android Metro/Hermes export succeeds after retrying the sandbox-blocked compiler with approval. .env.local is ignored by Git; source/template scan contains no secret/service-role or Mailgun references. The known 16 dependency audit findings remain unchanged.

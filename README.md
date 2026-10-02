@@ -13,7 +13,29 @@ cd /c/rollnspice-mobile
 npm start
 ```
 
-Open the project in Expo Go on Android. Fully reload the app after configuring environment variables. Run `npm run lint` and `npm run typecheck` for code checks. The client deliberately does not persist authentication sessions until the sign-in task is implemented.
+Open the menu in Expo Go on Android. Fully reload the app after configuring environment variables. Run `npm run lint`, `npm run typecheck`, and `npm run test:auth` for code checks.
+
+## Google sign-in development setup
+
+Google sign-in requires an installed development build. Expo Go can still preview the menu, but cannot handle this app's custom login callback. Account controls are on the About tab. Native sessions persist in AsyncStorage; refresh runs while the app is active. Sign-out applies to this device.
+
+In the existing Supabase project's Authentication URL Configuration, add `rollnspicemobile://explore?sb_flow_id=*` to Redirect URLs, preserving the existing website settings. The query wildcard allows the unique PKCE flow identifier generated for each login. Google is already enabled on the shared project. The app uses the pinned Supabase client's experimental flow-ID redirect option; review this option when upgrading that dependency.
+
+In Git Bash, sign in to your Expo account, then build:
+
+```bash
+cd /c/rollnspice-mobile
+npx eas-cli@latest login
+npx eas-cli@latest build --platform android --profile development
+```
+
+EAS may prompt to create/link the Expo project and generate Android signing credentials. Install the resulting APK on the phone, then run:
+
+```bash
+npx expo start --dev-client
+```
+
+Keep this server running during development. Test Google login, cancellation, app restart/session restoration, background/foreground refresh, and sign-out. Also test returning from Google after the app has been closed. These device checks remain pending; static checks and callback tests cannot establish that the complete Google flow works.
 
 The remaining content below is the original Expo starter documentation.
 

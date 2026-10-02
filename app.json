@@ -8,9 +8,11 @@
     "scheme": "rollnspicemobile",
     "userInterfaceStyle": "light",
     "ios": {
+      "bundleIdentifier": "com.rollnspice.mobile",
       "icon": "./assets/expo.icon"
     },
     "android": {
+      "package": "com.rollnspice.mobile",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -28,13 +30,22 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#fff3de"
+          "backgroundColor": "#fff3de",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "40de100e-9f33-4de1-a5e3-1c6732189c32"
+      }
+    },
+    "owner": "dev14k"
   }
 }
