@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { loadProducts, type Product } from '@/lib/products';
 
@@ -19,9 +19,9 @@ export function useProducts() {
     return () => { active = false; clearTimeout(timeout); controller.abort(); };
   }, [attempt]);
 
-  function retry() {
+  const retry = useCallback(() => {
     setState({ status: 'loading', products: [] });
     setAttempt((value) => value + 1);
-  }
+  }, []);
   return { ...state, retry };
 }

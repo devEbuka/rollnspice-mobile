@@ -15,6 +15,12 @@ npm start
 
 Open the menu in Expo Go on Android. Fully reload the app after configuring environment variables. Run `npm run lint`, `npm run typecheck`, and `npm run test:auth` for code checks.
 
+## Device cart
+
+Home includes Add to cart buttons; the Cart tab supports quantity changes and removal. The cart works signed out and persists on this device, with a maximum of 99 per item and 100 distinct product IDs. It remains a local device cart while signed in; cross-device sharing and checkout are later tasks.
+
+Only IDs and quantities are saved. Cart focus refreshes the live menu to calculate item totals from current prices. Missing products remain removable and are excluded from totals. Loading/network errors hide totals and preserve quantities; storage errors offer Retry. Verify adding, quantity changes, removal, app restart, and offline retry on Android. `npm run test:cart` exercises persistence and validation.
+
 ## Google sign-in development setup
 
 Google sign-in requires an installed development build. Expo Go can still preview the menu, but cannot handle this app's custom login callback. Account controls are on the About tab. Native sessions persist in AsyncStorage; refresh runs while the app is active. Sign-out applies to this device.

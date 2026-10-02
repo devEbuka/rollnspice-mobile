@@ -14,8 +14,10 @@ import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { useCart } from './cart-provider';
 
 export default function AppTabs() {
+  const { count } = useCart();
   return (
     <Tabs>
       <TabSlot style={{ height: '100%' }} />
@@ -23,6 +25,9 @@ export default function AppTabs() {
         <CustomTabList>
           <TabTrigger name="home" href="/" asChild>
             <TabButton>Home</TabButton>
+          </TabTrigger>
+          <TabTrigger name="cart" href="/cart" asChild>
+            <TabButton>Cart{count ? ` (${count})` : ''}</TabButton>
           </TabTrigger>
           <TabTrigger name="explore" href="/explore" asChild>
             <TabButton>About</TabButton>

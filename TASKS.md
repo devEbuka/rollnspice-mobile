@@ -4,7 +4,6 @@
 None.
 
 ## Up next
-- [ ] Implement a persistent guest cart with validated quantities and product IDs.
 - [ ] Implement approved shared-cart schema/RPCs and website integration in the website repository.
 - [ ] Add mobile cart synchronization, guest merge, reconnect handling, and sign-out isolation.
 - [ ] Extend and verify the website order API for authenticated mobile requests.
@@ -13,6 +12,12 @@ None.
 - [ ] Before release, resolve or reassess dependency advisories; validate any UUID override and Router decoder patch without SDK downgrades.
 
 ## Done
+- [x] Implement a persistent guest cart with validated quantities and product IDs (approved 2026-10-02).
+  - Implemented Home Add to cart controls, Cart tab/count, quantity controls (1–99), removal, empty state, and device persistence using existing AsyncStorage. Only product IDs/quantities are saved; no account sync or checkout is implemented.
+  - Catalogue refreshes on Cart focus. Totals use current integer-kobo prices; missing/invalid-price items stay removable and are excluded. Menu failures hide totals without erasing quantities; storage failures provide Retry.
+  - Verification passed: lint, typecheck, eight cart tests (restore, validation, totals, ordered writes, failed reads/writes/retry), and Android Hermes export.
+  - User confirmed adding, changing/removing quantities, close/reopen persistence, and decrement-at-one removal work on Android. Decrement removal is regression-tested; lint/typecheck pass (2026-10-02).
+
 - [x] Implement Google sign-in, persistent sessions, and mobile auth return handling (approved 2026-10-02).
   - Code implemented: About account panel, native persistent sessions, secure S256 PKCE, validated/deduplicated cold/warm callbacks, foreground refresh, local sign-out, and cancellation/errors.
   - Verification: lint/typecheck, 11 callback validation tests, generated S256/matching flow-ID check, and Android Hermes export pass. These checks do not replace real-device Google login testing.
@@ -31,6 +36,7 @@ None.
 - [x] Record website integration boundaries and a proposed shared-cart plan.
 
 ## Remaining verification
+- [ ] Device cart follow-up: exercise offline menu retry and unavailable-product handling.
 - [ ] Verify auth background/foreground refresh, intentional Google cancellation, and callback return after closing the app during login; verify iOS during release testing.
 - [ ] Optional auth improvement: show the Google account chooser on each login (not implemented).
 - [ ] Exercise offline error/retry behavior on Android during end-to-end testing; the user's live-menu confirmation did not explicitly cover disconnect/retry.

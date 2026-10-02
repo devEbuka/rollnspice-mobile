@@ -5,14 +5,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ProductCard } from '@/components/product-card';
 import { ThemedText } from '@/components/themed-text';
 import { BottomTabInset } from '@/constants/theme';
-import { useProducts } from '@/hooks/use-products';
+import { useCart } from '@/components/cart-provider';
 import { useTheme } from '@/hooks/use-theme';
 import { MenuHero } from '@/components/menu-hero';
 import { Brand } from '@/constants/brand';
 import type { Product } from '@/lib/products';
 
 export default function HomeScreen() {
-  const { status, products, retry } = useProducts();
+  const { menu: { status, products, retry } } = useCart();
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const list = useRef<FlatList<Product>>(null);
@@ -37,7 +37,7 @@ export default function HomeScreen() {
           </View>
           <ThemedText type="smallBold" style={{ color: Brand.orange, letterSpacing: 2 }}>THE GOOD STUFF</ThemedText>
           <ThemedText type="title">OUR MENU</ThemedText>
-          <ThemedText themeColor="textSecondary">Pick your flavour. Ordering is coming next.</ThemedText>
+          <ThemedText themeColor="textSecondary">Pick your flavour and build your cart.</ThemedText>
         </View>
       }
       ListEmptyComponent={
