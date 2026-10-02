@@ -1,4 +1,21 @@
-# Welcome to your Expo app 👋
+# Roll N Spice mobile
+
+## Live menu setup
+
+The Home screen reads the existing Supabase products table using its public read policy. Prices are stored in kobo and displayed in naira. Loading, empty menu, network timeout, and retry states are included. Authentication and ordering are separate tasks.
+
+Copy `.env.example` to `.env.local` and fill in the existing project's Supabase URL and publishable key. Local configuration is ignored by Git. Only these two public values belong here; never copy the website's complete environment file or any Supabase secret/service-role or Mailgun key.
+
+In Git Bash:
+
+```bash
+cd /c/rollnspice-mobile
+npm start
+```
+
+Open the project in Expo Go on Android. Fully reload the app after configuring environment variables. Run `npm run lint` and `npm run typecheck` for code checks. The client deliberately does not persist authentication sessions until the sign-in task is implemented.
+
+The remaining content below is the original Expo starter documentation.
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 

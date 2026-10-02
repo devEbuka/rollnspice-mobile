@@ -1,98 +1,81 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, FlatList, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { useRef } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
+import { ProductCard } from '@/components/product-card';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { BottomTabInset } from '@/constants/theme';
+import { useProducts } from '@/hooks/use-products';
+import { useTheme } from '@/hooks/use-theme';
+import { MenuHero } from '@/components/menu-hero';
+import { Brand } from '@/constants/brand';
+import type { Product } from '@/lib/products';
 
 export default function HomeScreen() {
+  const { status, products, retry } = useProducts();
+  const insets = useSafeAreaInsets();
+  const theme = useTheme();
+  const list = useRef<FlatList<Product>>(null);
+  const heroHeight = useRef(0);
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+    <FlatList
+      ref={list}
+      style={{ backgroundColor: theme.background }}
+      contentContainerStyle={[styles.content, {
+        paddingTop: Platform.OS === 'web' ? 100 : insets.top + 24,
+        paddingBottom: insets.bottom + BottomTabInset + 24,
+        paddingLeft: insets.left + 24,
+        paddingRight: insets.right + 24,
+      }]}
+      data={products}
+      keyExtractor={(product) => product.id}
+      renderItem={({ item }) => <ProductCard product={item} />}
+      ListHeaderComponent={
+        <View style={styles.header}>
+          <View onLayout={(event) => { heroHeight.current = event.nativeEvent.layout.height; }}>
+            <MenuHero onExplore={() => list.current?.scrollToOffset({ offset: heroHeight.current, animated: false })} />
+          </View>
+          <ThemedText type="smallBold" style={{ color: Brand.orange, letterSpacing: 2 }}>THE GOOD STUFF</ThemedText>
+          <ThemedText type="title">OUR MENU</ThemedText>
+          <ThemedText themeColor="textSecondary">Pick your flavour. Ordering is coming next.</ThemedText>
+        </View>
+      }
+      ListEmptyComponent={
+        <View style={styles.state} accessibilityLiveRegion="polite">
+          {status === 'loading' ? (
+            <>
+              <ActivityIndicator color={theme.text} accessibilityLabel="Loading menu" />
+              <ThemedText>Loading the menu…</ThemedText>
+            </>
+          ) : status === 'error' ? (
+            <>
+              <ThemedText style={styles.stateTitle}>The menu couldn’t load</ThemedText>
+              <ThemedText themeColor="textSecondary">Check your connection and try again.</ThemedText>
+              <Pressable accessibilityRole="button" onPress={retry}
+                style={({ pressed }) => [styles.retry, { backgroundColor: theme.backgroundElement }, pressed && styles.pressed]}>
+                <ThemedText type="smallBold">Try again</ThemedText>
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <ThemedText style={styles.stateTitle}>No items on the menu yet</ThemedText>
+              <ThemedText themeColor="textSecondary">Please check back soon.</ThemedText>
+              <Pressable accessibilityRole="button" onPress={retry} style={[styles.retry, { backgroundColor: theme.backgroundElement }]}>
+                <ThemedText type="smallBold">Refresh menu</ThemedText>
+              </Pressable>
+            </>
+          )}
+        </View>
+      }
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  content: { width: '100%', maxWidth: 720, alignSelf: 'center', flexGrow: 1 },
+  header: { gap: 12, marginBottom: 28 },
+  state: { paddingVertical: 40, gap: 16, alignItems: 'center' },
+  stateTitle: { fontSize: 20, lineHeight: 28, fontWeight: '700', textAlign: 'center' },
+  retry: { minHeight: 48, paddingHorizontal: 24, paddingVertical: 14, borderRadius: 12, justifyContent: 'center', borderWidth: 1, borderColor: Brand.orange },
+  pressed: { opacity: 0.7 },
 });

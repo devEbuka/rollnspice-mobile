@@ -1,17 +1,27 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { DefaultTheme, ThemeProvider } from 'expo-router';
+import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
+import { Brand } from '@/constants/brand';
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {});
+const theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: Brand.cream, card: Brand.panel, text: Brand.charcoal, primary: Brand.orange } };
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const [loaded, error] = useFonts({
+    Anton: require('@/assets/fonts/Anton-Regular.ttf'),
+    Inter: require('@/assets/fonts/Inter.ttf'),
+  });
+  useEffect(() => {
+    if (loaded || error) SplashScreen.hideAsync().catch(() => {});
+  }, [loaded, error]);
+  if (!loaded && !error) return null;
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
+    <ThemeProvider value={theme}>
+      <StatusBar style="dark" />
       <AppTabs />
     </ThemeProvider>
   );

@@ -1,5 +1,17 @@
 This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
 
+## Roll N Spice project context and workflow
+
+- This is the mobile client for the existing website at https://rollnspice.vercel.app. Website source: `C:\rollnspice`. Reuse its Supabase project, users, products, orders, and server-side email integration.
+- Read `TASKS.md` and `MOBILE_PLAN.md` at the start of each session. Work on one small task at a time; write a short implementation plan and get user approval before feature code, dependency additions, environment variables, or changes to the website/database.
+- Android is the primary test device; verify iOS after the core flow works. Use Git Bash syntax for commands shown to the user.
+- Keep non-route code outside `src/app/`. Centralize Supabase access in a helper when implemented. Prefer small files (roughly 150 lines).
+- Only the Supabase URL and publishable key may be included in the mobile bundle. Never copy `SUPABASE_SECRET_KEY`, service-role keys, or Mailgun variables into this repository. `EXPO_PUBLIC_` values are public; propose new variables before adding them.
+- Every exposed database table must have RLS. Users may only access their own private data. Never trust a client-sent user ID, price, subtotal, or order status: derive identity from verified authentication and prices from products on the server/database.
+- Follow the website's approved street-food design and exact live catalogue; do not invent products, prices, ratings, promotions, or delivery promises.
+- Shared-cart sync is a planned feature, not existing behavior. See `MOBILE_PLAN.md` for the guest merge, offline, and API decisions awaiting approval.
+- Update task status and record decisions after each approved task. Do not change the website/database from this workspace without explicit authorization.
+
 ## Expo has changed — do not trust your training data
 
 Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
