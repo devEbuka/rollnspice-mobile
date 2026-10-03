@@ -1,6 +1,6 @@
 # Mobile integration plan
 
-Status: staged implementation, 2026-10-02. The baseline, dependency review, live menu, branding, and Google authentication implementation have been approved. Authentication code is implemented; development-build setup and device verification remain pending. Shared-cart/checkout proposals below remain subject to their own approval. No website or database changes applied.
+Status: 2026-10-03. Core Android authentication and guest cart are user-verified. Shared-cart foundation and checkout are applied; the user confirmed the website integration is deployed. Mobile synchronization is implemented, technically verified and user-confirmed on Android (2026-10-03). C:/rollnspice/docs/shared-cart.md records the contract. Mobile checkout/order history remain separate tasks.
 
 ## Verified starting point
 
@@ -79,6 +79,19 @@ Scope approved: review SDK-compatible dependency remediation. Registry checks fo
 - Final validation: npm run lint and npm run typecheck pass; Android Metro/Hermes export succeeds after retrying the sandbox-blocked compiler with approval. .env.local is ignored by Git; source/template scan contains no secret/service-role or Mailgun references. The known 16 dependency audit findings remain unchanged.
 
 ## Further documentation
+
+## Approved mobile shared-cart implementation (2026-10-03)
+
+- Reuses the existing Supabase singleton and snapshot/mutation contract. Guests retain their device cart; signed-in customers load an owner-scoped cached snapshot and durable operation queue. Stored data contains IDs/quantities, revision and retry IDs, never product prices or another account's session.
+- Save-before-send/optimistic display, serialized local writes and identical operation retries protect rapid taps, restart and uncertain network results. Relative add/decrement preserves concurrent edits; whole-item removal requires a revision and no earlier pending request. Conflicts refresh and request review. Receipt replay always refetches current contents.
+- Guest merge claims persist before account queue writes and recover if that second write fails. Guest storage clears only after acknowledgement; caps/deleted-product adjustments are explained. Sign-out hides the account cart and starts an empty guest cart. Pending work remains scoped to its owner; auth-derived visibility masks old state and epoch checks reject late responses. Requests pin the matching session token before sending; server RLS derives ownership independently.
+- Owner-filtered Realtime revision events trigger snapshot reads. Cart focus, app foreground, Realtime reconnect and a 15-second active-app fallback refresh/drain the queue. No connectivity/native dependency was added; the fallback discovers reconnection within approximately 15 seconds. RPCs time out after 15 seconds without losing pending IDs. Server totals still use the current menu; mobile checkout is not added.
+- Files: cart-sync-data.ts (validated contract/cache), cart-sync-store.ts (handoff/queue), cart-sync-api.ts (pinned RPC/Realtime), CartProvider, Cart screen and ProductCard controls. Existing guest store is retained with an explicit clear operation. No environment variable, native configuration, website code or schema changes.
+- Verification: lint/typecheck, eight shared-cart regression tests plus eight existing guest tests; actual Supabase transport and Realtime peer writes, merge, decrement, sign-out, second-owner isolation and rejected token-owner mismatch; Android Hermes export. All live fixture records removed, preserving six products and seven existing orders. The user confirmed all Android acceptance checks on 2026-10-03: website/app updates both ways, sign-out/restoration, one-time guest merge, and offline/reconnect/restart. TASKS.md marks this task complete; iOS verification remains planned.
+
+## Website shared-cart milestone completed (2026-10-03)
+
+The approved website integration is implemented in C:/rollnspice and its atomic checkout migration is applied to the shared database. Guest merge, account-scoped durable changes, live revision/refetch, reconnect and sign-out isolation are verified. Real two-session browser tests confirmed a deliberately lost checkout response can be recovered after reload without another order or clearing a later addition. Website lint/build and 24 regression tests pass; temporary data was removed, preserving six products and seven existing orders. Mobile lint/typecheck also pass. The user subsequently confirmed website deployment; native synchronization is now implemented and user-verified on Android. See SHARED_CART_PLAN.md and C:/rollnspice/docs/shared-cart.md.
 
 ## Approved brand styling implementation (2026-10-02)
 

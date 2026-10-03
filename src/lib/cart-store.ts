@@ -64,4 +64,5 @@ export class CartStore {
     });
     return this.writes;
   };
+  clear = () => { this.publish({ lines: [], ready: true, error: '' }); return this.save(); };
 }

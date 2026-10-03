@@ -10,10 +10,10 @@ import { cartTotal, MAX_QUANTITY } from '@/lib/cart-store';
 import { formatPrice } from '@/lib/products';
 
 export default function CartScreen() {
-  const { lines, ready, error, count, setQuantity, retrySave, menu } = useCart();
+  const { lines, ready, error, count, addItem, decrementItem, removeItem, retrySave, menu, owner, pending, syncing, message, refreshCart } = useCart();
   const insets = useSafeAreaInsets();
   const retryMenu = menu.retry;
-  useFocusEffect(useCallback(() => { retryMenu(); }, [retryMenu]));
+  useFocusEffect(useCallback(() => { retryMenu(); void refreshCart(); }, [retryMenu, refreshCart]));
   return (
     <ScrollView style={styles.screen} contentContainerStyle={[styles.content, {
       paddingTop: Platform.OS === 'web' ? 100 : insets.top + 24,
@@ -22,10 +22,11 @@ export default function CartScreen() {
     }]}>
       <ThemedText type="smallBold" style={{ color: Brand.orange }}>ROLL N SPICE.</ThemedText>
       <ThemedText type="title">YOUR CART</ThemedText>
-      <ThemedText themeColor="textSecondary">Saved on this device. Checkout is coming next.</ThemedText>
+      <ThemedText themeColor="textSecondary" accessibilityLiveRegion="polite">{owner ? pending ? `${pending} change(s) waiting to sync.` : syncing ? 'Updating your account cart…' : 'Your account cart is shared with the website.' : 'Guest cart saved on this device.'} Checkout is coming next.</ThemedText>
+      {message ? <ThemedText accessibilityLiveRegion="polite">{message}</ThemedText> : null}
       {error ? <View style={styles.card} accessibilityLiveRegion="polite">
         <ThemedText>{error}</ThemedText>
-        <CartButton label="Retry saving or restoring cart" onPress={() => { void retrySave(); }}>Retry</CartButton>
+        <CartButton label="Retry saving or syncing cart" onPress={() => { void retrySave(); }}>Retry</CartButton>
       </View> : null}
       {!ready ? <ActivityIndicator color={Brand.orange} accessibilityLabel="Restoring cart" />
         : lines.length === 0 ? <View style={styles.card}>
@@ -47,10 +48,10 @@ export default function CartScreen() {
               <ThemedText style={styles.name}>{name}</ThemedText>
               <ThemedText themeColor="textSecondary">{unavailable ? 'This item is no longer available. Remove it from your cart.' : menu.status === 'ready' && priced ? `${formatPrice(product.price)} each · ${formatPrice(product.price * line.quantity)}` : 'Price unavailable until the menu loads.'}</ThemedText>
               <View style={styles.controls}>
-                <CartButton label={line.quantity === 1 ? `Remove ${name} from cart` : `Decrease quantity of ${name}`} onPress={() => setQuantity(line.productId, line.quantity - 1)}>−</CartButton>
+                <CartButton label={line.quantity === 1 ? `Remove ${name} from cart` : `Decrease quantity of ${name}`} onPress={() => decrementItem(line.productId)}>−</CartButton>
                 <ThemedText accessibilityLabel={`Quantity ${line.quantity}`} style={styles.quantity}>{line.quantity}</ThemedText>
-                <CartButton label={`Increase quantity of ${name}`} disabled={menu.status !== 'ready' || unavailable || line.quantity >= MAX_QUANTITY} onPress={() => setQuantity(line.productId, line.quantity + 1)}>+</CartButton>
-                <CartButton label={`Remove ${name} from cart`} onPress={() => setQuantity(line.productId, 0)}>Remove</CartButton>
+                <CartButton label={`Increase quantity of ${name}`} disabled={menu.status !== 'ready' || unavailable || line.quantity >= MAX_QUANTITY} onPress={() => addItem(line.productId)}>+</CartButton>
+                <CartButton label={`Remove ${name} from cart`} disabled={pending > 0} onPress={() => removeItem(line.productId)}>Remove</CartButton>
               </View>
             </View>;
           })}

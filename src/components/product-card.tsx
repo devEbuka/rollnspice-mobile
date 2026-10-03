@@ -9,7 +9,7 @@ import { useCart } from './cart-provider';
 import { MAX_QUANTITY } from '@/lib/cart-store';
 
 export function ProductCard({ product }: { product: Product }) {
-  const { lines, ready, setQuantity } = useCart();
+  const { lines, ready, addItem } = useCart();
   const quantity = lines.find((line) => line.productId === product.id)?.quantity ?? 0;
   const disabled = !ready || quantity >= MAX_QUANTITY || !Number.isSafeInteger(product.price) || product.price < 0;
   return (
@@ -21,7 +21,7 @@ export function ProductCard({ product }: { product: Product }) {
       {product.description ? <ThemedText themeColor="textSecondary">{product.description}</ThemedText> : null}
       <ThemedText style={styles.price}>{formatPrice(product.price)}</ThemedText>
       <Pressable accessibilityRole="button" accessibilityLabel={`Add ${product.name} to cart`}
-        accessibilityState={{ disabled }} disabled={disabled} onPress={() => setQuantity(product.id, quantity + 1)}
+        accessibilityState={{ disabled }} disabled={disabled} onPress={() => addItem(product.id)}
         style={({ pressed }) => [styles.add, (disabled || pressed) && { opacity: 0.6 }]}>
         <ThemedText style={{ color: Brand.panel, fontWeight: '700' }}>{!ready ? 'Restoring cart…' : quantity >= MAX_QUANTITY ? 'Quantity limit reached' : quantity ? `Add another · ${quantity} in cart` : 'Add to cart'}</ThemedText>
       </Pressable>

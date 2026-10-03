@@ -4,14 +4,15 @@
 None.
 
 ## Up next
-- [ ] Implement approved shared-cart schema/RPCs and website integration in the website repository.
-- [ ] Add mobile cart synchronization, guest merge, reconnect handling, and sign-out isolation.
 - [ ] Extend and verify the website order API for authenticated mobile requests.
 - [ ] Implement mobile checkout and own-order history using shared data.
 - [ ] Verify the complete Android flow, cross-device syncing, and then iOS; prepare EAS builds.
 - [ ] Before release, resolve or reassess dependency advisories; validate any UUID override and Router decoder patch without SDK downgrades.
 
 ## Done
+- [x] Mobile shared-cart synchronization (approved 2026-10-03): implemented account snapshots, durable retries, guest merge, live revision refresh and sign-out isolation. Lint/typecheck, eight sync regressions, eight existing guest tests, live Supabase transport/Realtime/isolation checks and Android Hermes export pass. Temporary test accounts/cart data removed. User confirmed all Android acceptance checks on 2026-10-03: same-account website/app updates both ways, sign-out/restoration, guest merge once, and offline/reconnect/restart.
+- [x] Website shared-cart integration and atomic checkout (2026-10-03): persistent account-scoped changes, one-time guest merge, live revision/refetch, offline/reconnect and sign-out isolation; checkout receipts prevent duplicate orders and preserve later additions. Website lint/build, 24 regression tests, isolated/live database tests and real two-session browser checks pass; fixture data removed. User confirmed deployment. Mobile synchronization is also user-verified on Android.
+- [x] Shared-cart database foundation in the website repository/shared Supabase project — owner RLS, snapshot/mutation RPCs, retry/merge receipts, revision conflicts, quantity/product limits, and Realtime revision publication. Local/live rollback tests, actual concurrent requests, REST access checks, and website lint/build pass (2026-10-02). Temporary test data removed; website/mobile cart UI integration remains next.
 - [x] Implement a persistent guest cart with validated quantities and product IDs (approved 2026-10-02).
   - Implemented Home Add to cart controls, Cart tab/count, quantity controls (1–99), removal, empty state, and device persistence using existing AsyncStorage. Only product IDs/quantities are saved; no account sync or checkout is implemented.
   - Catalogue refreshes on Cart focus. Totals use current integer-kobo prices; missing/invalid-price items stay removable and are excluded. Menu failures hide totals without erasing quantities; storage failures provide Retry.
