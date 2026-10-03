@@ -111,3 +111,8 @@ The approved website integration is implemented in C:/rollnspice and its atomic 
 - https://supabase.com/docs/guides/database/postgres/row-level-security
 
 Recheck current versioned documentation before implementation. Website configuration/schema above is based on repository evidence, not a fresh production/database audit.
+
+
+## Authenticated order API milestone (2026-10-03)
+
+The approved website API extension is implemented and verified in C:/rollnspice. Bearer tokens and website cookies verify the current user; mobile checkout requires durable operation/revision payloads; GET returns paginated own orders. Website lint/build, 31 regressions, real HTTP/Supabase and local/hosted SQL checks pass; mobile lint/typecheck pass. A shared-backend conflict-code fix (PT409) is applied. Temporary fixtures are removed. Commit/push/deploy the website changes before mobile checkout integration. See C:/rollnspice/docs/order-api.md. Mobile checkout and order-history screens remain next.
