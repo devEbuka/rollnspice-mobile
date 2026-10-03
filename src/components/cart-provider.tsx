@@ -23,7 +23,7 @@ function useCartValue() {
     return () => { stop(); lifecycle.remove(); clearInterval(timer); };
   }, [owner, loading]);
   const visible = loading || state.owner !== owner ? { ...state, owner, lines: [], ready: false, error: '', message: '', pending: 0, syncing: false } : state;
-  return { ...visible, menu, retrySave: store.refresh, refreshCart: store.refresh,
+  return { ...visible, menu, retrySave: store.refresh, refreshCart: store.refresh, checkoutSnapshot: store.checkoutSnapshot,
     addItem: (id: string) => { void store.edit('add', id); },
     decrementItem: (id: string) => { void store.edit('decrement', id); },
     removeItem: (id: string) => { void store.edit('remove', id); },

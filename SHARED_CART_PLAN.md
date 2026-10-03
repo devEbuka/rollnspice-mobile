@@ -50,4 +50,4 @@ Prepared 2026-10-02 after approved inspection. Milestones 1 and 2 are complete: 
 
 ## Next approval boundary
 
-Milestones 1 and 2 are complete; the user confirmed website deployment. Milestone 3 is complete: implemented, technically verified and user-confirmed on Android (2026-10-03). No application dependency or environment variable was added. Native signed-in carts now consume the shared backend; guests keep device storage. Next: authenticated mobile order API, then mobile checkout and own-order history.
+Milestones 1 and 2 are complete; the user confirmed website deployment. Milestone 3 is complete: implemented, technically verified and user-confirmed on Android (2026-10-03). No application dependency or environment variable was added. Native signed-in carts now consume the shared backend; guests keep device storage. The authenticated mobile order API is deployed and user-verified. Mobile checkout and own-order history are implemented, technically verified and user-confirmed on Android. See MOBILE_PLAN.md and TASKS.md.

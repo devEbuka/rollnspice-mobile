@@ -1,6 +1,6 @@
 # Mobile integration plan
 
-Status: 2026-10-03. Core Android authentication and guest cart are user-verified. Shared-cart foundation and checkout are applied; the user confirmed the website integration is deployed. Mobile synchronization is implemented, technically verified and user-confirmed on Android (2026-10-03). C:/rollnspice/docs/shared-cart.md records the contract. Mobile checkout/order history remain separate tasks.
+Status: 2026-10-03. Core Android authentication and guest cart are user-verified. Shared-cart foundation and checkout are applied; the user confirmed the website integration is deployed. Mobile synchronization is implemented, technically verified and user-confirmed on Android (2026-10-03). C:/rollnspice/docs/shared-cart.md records the contract. The website bearer-authenticated order API is deployed and user-verified. Mobile checkout and own-order history are implemented, technically verified and user-confirmed on Android.
 
 ## Verified starting point
 
@@ -115,4 +115,22 @@ Recheck current versioned documentation before implementation. Website configura
 
 ## Authenticated order API milestone (2026-10-03)
 
-The approved website API extension is implemented and verified in C:/rollnspice. Bearer tokens and website cookies verify the current user; mobile checkout requires durable operation/revision payloads; GET returns paginated own orders. Website lint/build, 31 regressions, real HTTP/Supabase and local/hosted SQL checks pass; mobile lint/typecheck pass. A shared-backend conflict-code fix (PT409) is applied. Temporary fixtures are removed. Commit/push/deploy the website changes before mobile checkout integration. See C:/rollnspice/docs/order-api.md. Mobile checkout and order-history screens remain next.
+The approved website API extension is implemented and verified in C:/rollnspice. Bearer tokens and website cookies verify the current user; mobile checkout requires durable operation/revision payloads; GET returns paginated own orders. Website lint/build, 31 regressions, real HTTP/Supabase and local/hosted SQL checks pass; mobile lint/typecheck pass. A shared-backend conflict-code fix (PT409) is applied. Temporary fixtures are removed. The user confirmed deployment of the website API. See C:/rollnspice/docs/order-api.md. The mobile UI is implemented as described below; Android acceptance remains pending.
+
+## Approved mobile checkout and order history (2026-10-03)
+
+- Added a Checkout stack screen and Orders tab while preserving Home, Cart and About URLs. Cart links to checkout; guest checkout requires sign-in. Checkout reviews a coherent synced revision, current menu estimates and optional instructions (250 characters). Pending cart work, failed menu reads and unavailable products block a new order. The server validates the final contents and saves prices.
+- A versioned, account-scoped request is saved before sending. Rapid taps, offline errors, restart and uncertain replies retry the identical operation ID and reviewed revision. A conflict requires explicit refresh and review before another attempt. Confirmed orders display the server reference, saved subtotal/status and actual email outcome; cart contents are refetched rather than blindly cleared. A saved request or confirmation is accessible even when the cart is empty.
+- Orders fetches only the signed-in customer's history in pages of 20 and displays saved prices. Focus/foreground refresh, sign-out masking and late-response fences prevent another account's details appearing. Request storage failures block unsafe replacement attempts. No new dependency, native configuration, environment variable, website change or database migration was required.
+- Verification passed: lint, typecheck, 10 order regressions, nine cart-sync regressions, Android Hermes export and browser navigation/guest guards. Actual mobile stores and transport were exercised against the deployed API with two isolated users: lost-reply recovery created one order, receipt replay preserved a later cart addition, saved history prices matched, stale checkout returned a reviewable conflict, and owner isolation held. Temporary users/orders/cart data were removed; six products and seven original orders remain.
+- Android acceptance remains pending. Restart Metro with `npx expo start --dev-client` and reload the installed development app; no replacement APK is required. Verify: (1) checkout with instructions, confirmation and matching app/website history; (2) website cart edit after opening checkout causes a conflict and requires refreshed review; (3) offline attempt, close/reopen, reconnect and retry yields one order; (4) sign-out hides history and signing back in restores it. These checks create real orders; use a small test cart.
+- The user confirmed the Android flow works; TASKS.md marks this milestone complete. iOS and release verification remain separate tasks.
+
+## Android checkout acceptance and copy refinement (2026-10-03)
+
+The user confirmed the Android checkout flow works. Removed website/account-matching instructions, routine cart-sync explanations, saved-request IDs and retry implementation details from customer screens. Sign-in, order-status recovery and errors now use short action-focused wording. TASKS.md marks the checkout/history milestone complete; earlier pending-acceptance notes above are historical.
+
+
+## Cart thumbnails and Account navigation (2026-10-03)
+
+Cart item headings reuse the existing bundled menu photos in 80-point thumbnails, with wrapping names and retained quantity/removal controls. Missing catalogue images still allow cart use. Account replaces About in the four-tab navigation; it contains the existing sign-in/sign-out panel and links to About as a stack screen. Native login callbacks return to Account. No dependencies or authentication changes. Android visual/navigation confirmation remains pending.

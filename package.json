@@ -49,7 +49,8 @@
     "typecheck": "tsc --noEmit",
     "test:auth": "node scripts/test-auth.cjs",
     "test:cart": "node scripts/test-cart.cjs",
-    "test:cart-sync": "node scripts/test-cart-sync.cjs"
+    "test:cart-sync": "node scripts/test-cart-sync.cjs",
+    "test:orders": "node scripts/test-orders.cjs"
   },
   "private": true
 }

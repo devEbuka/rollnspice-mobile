@@ -1,10 +1,10 @@
-import { DefaultTheme, ThemeProvider } from 'expo-router';
+import { DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
-import AppTabs from '@/components/app-tabs';
+import { CheckoutProvider } from '@/components/checkout-provider';
 import { Brand } from '@/constants/brand';
 import { AuthProvider } from '@/components/auth-provider';
 import { CartProvider } from '@/components/cart-provider';
@@ -24,7 +24,13 @@ export default function TabLayout() {
   return (
     <ThemeProvider value={theme}>
       <StatusBar style="dark" />
-      <AuthProvider><CartProvider><AppTabs /></CartProvider></AuthProvider>
+      <AuthProvider><CartProvider><CheckoutProvider>
+        <Stack screenOptions={{ headerStyle: { backgroundColor: Brand.cream }, headerTintColor: Brand.orange, headerTitleStyle: { fontFamily: Brand.display }, contentStyle: { backgroundColor: Brand.cream } }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="checkout" options={{ title: 'CHECKOUT' }} />
+          <Stack.Screen name="explore" options={{ title: 'ABOUT ROLL N SPICE' }} />
+        </Stack>
+      </CheckoutProvider></CartProvider></AuthProvider>
     </ThemeProvider>
   );
 }

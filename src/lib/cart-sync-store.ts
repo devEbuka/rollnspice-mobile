@@ -30,7 +30,7 @@ export class SyncedCartStore {
     await this.storage.setItem(accountKey(data.owner), JSON.stringify(data)); this.accounts.set(data.owner, data);
     if (this.state.owner === data.owner) this.publish({ lines: optimisticLines(data), pending: data.queue.length });
   }
-  private failure() { this.publish({ syncing: false, error: 'Cart could not sync or save. Saved changes are safe; check your connection or device storage and tap Retry.' }); }
+  private failure() { this.publish({ syncing: false, error: 'Your cart couldn’t update. Check your connection and tap Retry.' }); }
   // Called immediately on auth changes, before any asynchronous storage/network work.
   identify = async (owner: string | null): Promise<void> => {
     if (this.state.ready && this.state.owner === owner) return this.refresh();
@@ -56,7 +56,7 @@ export class SyncedCartStore {
           if (!account.queue.some((op) => op.id === operation.id)) account = { ...account, queue: [...account.queue, operation] };
         }
         await this.commit(account);
-        if (epoch === this.epoch) this.publish({ ready: true, message: claim && claim.owner !== owner ? 'Guest items have a pending merge for another account. Sign into that account to finish it.' : '' });
+        if (epoch === this.epoch) this.publish({ ready: true, message: claim && claim.owner !== owner ? 'Some items belong to another account. Sign in to that account to restore them.' : '' });
       });
       if (epoch === this.epoch) await this.refresh();
     } catch { if (epoch === this.epoch) this.failure(); }
@@ -72,7 +72,7 @@ export class SyncedCartStore {
     return this.serialize(async () => {
       if (epoch !== this.epoch) return;
       const data = await this.account(owner);
-      if (action === 'remove' && data.queue.length) { this.publish({ message: 'Sync pending changes before removing the whole item. You can still decrease its quantity.' }); return; }
+      if (action === 'remove' && data.queue.length) { this.publish({ message: 'Your cart is updating. Try removing the item again shortly.' }); return; }
       const op: CartOperation = { id: this.uuid(), action, lines: [{ productId, quantity: action === 'remove' ? 0 : 1 }], ...(action === 'remove' ? { revision: data.revision } : {}) };
       const next = { ...data, queue: [...data.queue, op] };
       if (optimisticLines(next).length > 100) { this.publish({ message: 'Choose up to 100 different items.' }); return; }
@@ -110,7 +110,7 @@ export class SyncedCartStore {
               const acknowledged = !result.error && !(result.data as { replayed?: boolean })?.replayed ? remoteSnapshot(result.data) : {};
               await this.commit({ ...current, ...acknowledged, queue: current.queue.filter((p) => p.id !== op.id) });
               const adjusted = (result.data as { adjustments?: unknown[] } | undefined)?.adjustments?.length;
-              if (!result.error && op.action === 'merge' && !adjusted) this.publish({ message: 'Your guest items were added to your account cart.' });
+              if (!result.error && op.action === 'merge' && !adjusted) this.publish({ message: 'Your items were added to your cart.' });
               if (result.error || adjusted) this.publish({ message: result.error?.message === 'CART_CONFLICT'
                 ? 'Your cart changed elsewhere. Review it before removing that item again.' : 'Review your cart: an item was unavailable, a limit was reached, or a change could not be applied.' });
             });
@@ -128,5 +128,16 @@ export class SyncedCartStore {
       } catch { if (epoch === this.epoch) this.failure(); }
       finally { if (this.running === run) this.running = undefined; if (epoch === this.epoch) this.publish({ syncing: false }); }
     })(); return run.promise;
+  };
+  checkoutSnapshot = async (owner: string) => {
+    const epoch = this.epoch;
+    if (owner !== this.state.owner) throw new Error('Account changed');
+    await this.refresh();
+    return this.serialize(async () => {
+      if (epoch !== this.epoch || owner !== this.state.owner || !this.state.ready || this.state.error) throw new Error('Sync your cart before checking out.');
+      const data = await this.account(owner);
+      if (data.queue.length || !data.lines.length) throw new Error('Sync pending changes and add items before checking out.');
+      return { revision: data.revision, lines: data.lines.map((line) => ({ ...line })) };
+    });
   };
 }

@@ -1,15 +1,15 @@
 # Roll N Spice mobile tasks
 
 ## In progress
-None.
+- [ ] Cart thumbnails and dedicated Account navigation (2026-10-03): reuse menu photos in cart, move sign-in/sign-out to Account and link About from Account. Implemented; awaiting Android visual/navigation confirmation.
 
 ## Up next
-- [ ] Implement mobile checkout and own-order history using shared data.
 - [ ] Verify the complete Android flow, cross-device syncing, and then iOS; prepare EAS builds.
 - [ ] Before release, resolve or reassess dependency advisories; validate any UUID override and Router decoder patch without SDK downgrades.
 
 ## Done
-- [x] Authenticated mobile order API (2026-10-03): bearer-token verification with owner RLS, preserved cookie login, retry-safe mobile checkout and paginated own-order history. Website lint/build, 31 regression tests, real compiled HTTP/Supabase checks and local/live SQL suites pass; mobile lint/typecheck pass. Fixed shared-cart business conflicts to PT409 to prevent PostgREST retry loops. Temporary users/orders/cart records removed; six products and seven original orders preserved. Website changes await commit/push/deployment.
+- [x] Mobile checkout, confirmation and own-order history (2026-10-03): durable account-scoped checkout, conflict review, confirmation and paginated order history implemented. Lint/typecheck, 10 order regressions, nine sync regressions, live API recovery/isolation, Android export and browser checks pass. User confirmed the Android flow works. Simplified customer copy to remove website assumptions, sync explanations and internal request IDs.
+- [x] Authenticated mobile order API (2026-10-03): bearer-token verification with owner RLS, preserved cookie login, retry-safe mobile checkout and paginated own-order history. Website lint/build, 31 regression tests, real compiled HTTP/Supabase checks and local/live SQL suites pass; mobile lint/typecheck pass. Fixed shared-cart business conflicts to PT409 to prevent PostgREST retry loops. Temporary users/orders/cart records removed; six products and seven original orders preserved. User confirmed website API deployment on 2026-10-03.
 - [x] Mobile shared-cart synchronization (approved 2026-10-03): implemented account snapshots, durable retries, guest merge, live revision refresh and sign-out isolation. Lint/typecheck, eight sync regressions, eight existing guest tests, live Supabase transport/Realtime/isolation checks and Android Hermes export pass. Temporary test accounts/cart data removed. User confirmed all Android acceptance checks on 2026-10-03: same-account website/app updates both ways, sign-out/restoration, guest merge once, and offline/reconnect/restart.
 - [x] Website shared-cart integration and atomic checkout (2026-10-03): persistent account-scoped changes, one-time guest merge, live revision/refetch, offline/reconnect and sign-out isolation; checkout receipts prevent duplicate orders and preserve later additions. Website lint/build, 24 regression tests, isolated/live database tests and real two-session browser checks pass; fixture data removed. User confirmed deployment. Mobile synchronization is also user-verified on Android.
 - [x] Shared-cart database foundation in the website repository/shared Supabase project — owner RLS, snapshot/mutation RPCs, retry/merge receipts, revision conflicts, quantity/product limits, and Realtime revision publication. Local/live rollback tests, actual concurrent requests, REST access checks, and website lint/build pass (2026-10-02). Temporary test data removed; website/mobile cart UI integration remains next.

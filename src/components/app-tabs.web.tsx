@@ -7,7 +7,7 @@ import {
   TabListProps,
 } from 'expo-router/ui';
 import { SymbolView } from 'expo-symbols';
-import { Pressable, useColorScheme, View, StyleSheet } from 'react-native';
+import { Pressable, useColorScheme, useWindowDimensions, View, StyleSheet } from 'react-native';
 
 import { ExternalLink } from './external-link';
 import { ThemedText } from './themed-text';
@@ -29,8 +29,11 @@ export default function AppTabs() {
           <TabTrigger name="cart" href="/cart" asChild>
             <TabButton>Cart{count ? ` (${count})` : ''}</TabButton>
           </TabTrigger>
-          <TabTrigger name="explore" href="/explore" asChild>
-            <TabButton>About</TabButton>
+          <TabTrigger name="orders" href="/orders" asChild>
+            <TabButton>Orders</TabButton>
+          </TabTrigger>
+          <TabTrigger name="account" href="/account" asChild>
+            <TabButton>Account</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>
@@ -54,18 +57,19 @@ export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps
 
 export function CustomTabList(props: TabListProps) {
   const scheme = useColorScheme();
+  const compact = useWindowDimensions().width < 600;
   const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
 
   return (
     <View {...props} style={styles.tabListContainer}>
-      <ThemedView type="backgroundElement" style={styles.innerContainer}>
-        <ThemedText type="smallBold" style={styles.brandText}>
+      <ThemedView type="backgroundElement" style={[styles.innerContainer, compact && styles.compactContainer]}>
+        {!compact && <ThemedText type="smallBold" style={styles.brandText}>
           Roll N Spice
-        </ThemedText>
+        </ThemedText>}
 
         {props.children}
 
-        <ExternalLink href="https://rollnspice.vercel.app" asChild>
+        {!compact && <ExternalLink href="https://rollnspice.vercel.app" asChild>
           <Pressable style={styles.externalPressable}>
             <ThemedText type="link">Website</ThemedText>
             <SymbolView
@@ -74,7 +78,7 @@ export function CustomTabList(props: TabListProps) {
               size={12}
             />
           </Pressable>
-        </ExternalLink>
+        </ExternalLink>}
       </ThemedView>
     </View>
   );
@@ -102,12 +106,19 @@ const styles = StyleSheet.create({
   brandText: {
     marginRight: 'auto',
   },
+  compactContainer: {
+    paddingHorizontal: Spacing.two,
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
   pressed: {
     opacity: 0.7,
   },
   tabButtonView: {
-    paddingVertical: Spacing.one,
-    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.two,
+    minHeight: 44,
+    justifyContent: 'center',
     borderRadius: Spacing.three,
   },
   externalPressable: {

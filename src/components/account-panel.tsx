@@ -11,10 +11,10 @@ export function AccountPanel() {
       <ThemedText type="subtitle">YOUR ACCOUNT</ThemedText>
       {loading ? <ActivityIndicator accessibilityLabel="Restoring your account" color={Brand.orange} /> : (
         <>
-          <ThemedText themeColor="textSecondary">{session ? `Signed in as ${session.user.email ?? 'your Google account'}` : 'Sign in with the same Google account you use on our website.'}</ThemedText>
+          <ThemedText themeColor="textSecondary">{session ? `Signed in as ${session.user.email ?? 'your Google account'}` : 'Sign in to place orders and view your order history.'}</ThemedText>
           {Platform.OS === 'web' && !session ? (
             <ExternalLink href="https://rollnspice.vercel.app" asChild>
-              <Pressable accessibilityRole="link" style={styles.button}><ThemedText style={styles.label}>Sign in on our website ↗</ThemedText></Pressable>
+              <Pressable accessibilityRole="link" style={styles.button}><ThemedText style={styles.label}>Continue to sign in ↗</ThemedText></Pressable>
             </ExternalLink>
           ) : (
             <Pressable accessibilityRole="button" accessibilityState={{ disabled: busy, busy }} disabled={busy}

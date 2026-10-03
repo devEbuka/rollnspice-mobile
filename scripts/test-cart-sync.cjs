@@ -35,7 +35,7 @@ function fixture() {
     const receiptKey = owner + args.p_operation_id;
     if (receipts.has(receiptKey)) return { data: { ...receipts.get(receiptKey), replayed: true } };
     const data = snapshot(owner);
-    if (args.p_expected_revision != null && args.p_expected_revision !== data.revision) return { error: { message: 'CART_CONFLICT', code: '40001' } };
+    if (args.p_expected_revision != null && args.p_expected_revision !== data.revision) return { error: { message: 'CART_CONFLICT', code: 'PT409' } };
     const lines = new Map(data.items.map(p => [p.product_id,p.quantity]));
     for (const line of args.p_items) {
       const old = lines.get(line.product_id) ?? 0;
@@ -101,4 +101,12 @@ test('late old-account responses cannot change the new visible cart',async()=>{
   await store.identify('one'); hold=true; const refresh=store.refresh(); await store.identify('two');
   release({data:{revision:9,items:[{product_id:id,quantity:99}]}}); await refresh;
   assert.equal(store.getSnapshot().owner,'two'); assert.equal(store.getSnapshot().lines.length,0);
+});
+test('checkout snapshot refuses unsynced, empty or different-owner carts',async()=>{
+  const f=fixture(); const store=f.create(); await store.identify('one');
+  await assert.rejects(store.checkoutSnapshot('one'));
+  await store.edit('add',id); await store.refresh();
+  const review=await store.checkoutSnapshot('one'); assert.equal(review.lines[0].quantity,1); assert.equal(review.revision,f.snapshot('one').revision);
+  f.offline(true); await store.edit('add',id); await store.refresh(); await assert.rejects(store.checkoutSnapshot('one'));
+  await assert.rejects(store.checkoutSnapshot('two'));
 });

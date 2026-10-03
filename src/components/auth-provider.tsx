@@ -51,7 +51,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       if (!url.startsWith(MOBILE_AUTH_REDIRECT + '?')) return;
       try {
         await completeGoogleSignIn(url);
-        if (active) { setMessage('Signed in successfully.'); router.replace('/explore'); }
+        if (active) { setMessage('Signed in successfully.'); router.replace('/account'); }
       } catch { if (active) setMessage('Sign-in could not finish. Please try again.'); }
     }
     const link = Linking.addEventListener('url', ({ url }) => { void handleUrl(url); });
